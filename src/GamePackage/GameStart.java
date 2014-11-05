@@ -188,7 +188,7 @@ public class GameStart {
             if (visibInd == -1) {
                 bombChar = s.substring(bombCountInd + PREF_BOMBS_COUNT.length());
             } else {
-                bombChar = s.substring(bombInd + PREF_BOMBS.length(), visibInd);
+                bombChar = s.substring(bombInd + PREF_BOMBS.length(), visibCountInd);
             }
             bombs = stringToCoordArray(bombChar, bombcount);
 
@@ -248,7 +248,7 @@ public class GameStart {
             result[resultIndex][0] = Integer.valueOf(coordArr[1].trim());
         }
 
-        return result;
+        return result; //TODO вынести в класс загрузки
     }
 
     private static int[] inputIndex(Field field){
@@ -262,11 +262,11 @@ public class GameStart {
                 System.out.print("Введите координату Х: ");
                 c = BR.readLine();
             }
-            indexArr[0] = Integer.parseInt(c);
+            indexArr[0] = Integer.valueOf(c);
 
             System.out.print("Введите координату Y: ");
             c = BR.readLine();
-            indexArr[1] = Integer.parseInt(c);
+            indexArr[1] = Integer.valueOf(c);
         } catch (IOException exc) {
             System.out.println("Некорректный ввод");
         }
