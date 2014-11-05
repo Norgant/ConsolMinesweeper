@@ -35,7 +35,7 @@ public class Field {
         }
     }
 
-    public Field(int wightSize, int heightSize, int bombC, int[][]bombsArr, int[][] cellsArr) {
+    public Field(int wightSize, int heightSize, int bombC, int[][] bombsArr, int[][] cellsArr) {
         bombCount = bombC;
         wight = wightSize;
         height = heightSize;

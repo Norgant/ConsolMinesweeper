@@ -14,7 +14,9 @@ public class GameStart {
     private static final String PREF_VISIBLE_COUNT  = "visiblecount=";
     private static final String PREF_VISIBLE        = "visible=";
     private static final String PREF_BOMBS_COUNT    = "bombscount=";
-    private static final String DEFAULT_READ_FILE_ERROR  = "Ошибка загрузки файла!!!";
+    private static final String DEFAULT_READ_FILE_ERROR = "Ошибка загрузки файла!!!";
+    private static final String COORD_SPLITER           = ";";
+    private static final String WIGHT_HEIGHT_SPLITER    = ":";
     private static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) {
@@ -183,21 +185,21 @@ public class GameStart {
             bombs = new int [bombcount][2];
 
             //Обработаем массив с бомбами
-            char[] bombChar;
+            String bombChar;
             if (visibInd == -1) {
-                bombChar = s.substring(bombCountInd + PREF_BOMBS_COUNT.length()).toCharArray();
+                bombChar = s.substring(bombCountInd + PREF_BOMBS_COUNT.length());
             } else {
-                bombChar = s.substring(bombInd + PREF_BOMBS.length(), visibInd).toCharArray();
+                bombChar = s.substring(bombInd + PREF_BOMBS.length(), visibInd);
             }
-            bombs = listToArray(bombChar, bombcount);
+            bombs = stringToCoordArray(bombChar, bombcount);
 
 
             //Обработаем массив с шагами
-            char[] visibChar;
+            String visibChar;
             if (visibInd != -1) {
                 visibleCount = Integer.valueOf(s.substring(visibCountInd  + PREF_VISIBLE_COUNT.length(), visibInd));
-                visibChar    = s.substring(visibInd + PREF_VISIBLE.length()).toCharArray();
-                visibleCells = listToArray(visibChar, visibleCount);
+                visibChar    = s.substring(visibInd + PREF_VISIBLE.length());
+                visibleCells = stringToCoordArray(visibChar, visibleCount);
             } else {
                 visibleCount = 0;
             }
@@ -255,10 +257,31 @@ public class GameStart {
                     tempString += symbol;
                     break;
             }
-
         }
 
+
         return intArray;
+    }
+
+    private static int[][] stringToCoordArray (String coord, int intArrayIndex) throws IOException {
+        int[][] result = null;
+        String[] strArray = coord.split(COORD_SPLITER);
+
+        if (strArray.length == 0) {
+            throw new IOException(DEFAULT_READ_FILE_ERROR);
+        }
+        result = new int[strArray.length][2];
+        int resultIndex = 0;
+        for (String coordStr: strArray){
+            String[] coordArr = coordStr.split(WIGHT_HEIGHT_SPLITER);
+            if (coordArr.length == 0) {
+                throw new IOException(DEFAULT_READ_FILE_ERROR);
+            }
+            result[resultIndex][0] = Integer.valueOf(coordArr[0].trim());
+            result[resultIndex][0] = Integer.valueOf(coordArr[1].trim());
+        }
+
+        return result;
     }
 
     private static int[] inputIndex(Field field){
