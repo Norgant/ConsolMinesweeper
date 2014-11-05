@@ -5,6 +5,7 @@ import java.io.*;
 
 /**
  * Created by PEfremov on 21.10.2014.
+ * Да начнется игра!
  */
 public class GameStart {
     private static final String DEFAULT_SAVE_PATH = "C:\\FileTest\\MineSavedGame.txt";
@@ -57,13 +58,13 @@ public class GameStart {
     }
 
     private static boolean isGameOver(){
-        String answer = "";
+
         boolean isOver = false;
         boolean inputCorrect = false;
         while (!inputCorrect) {
             System.out.print("Введите \"Повтор\" для новой игры или \"Выход\" для выхода из игры: ");
             try {
-                answer = BR.readLine();
+                String answer = BR.readLine();
                 switch (answer.trim().toLowerCase()) {
                     case "повтор":
                         System.out.println();
@@ -182,8 +183,6 @@ public class GameStart {
             height      = Integer.valueOf(s.substring(heightInd     + PREF_HEIGHT.length(),      bombCountInd));
             bombcount   = Integer.valueOf(s.substring(bombCountInd  + PREF_BOMBS_COUNT.length(), bombInd));
 
-            bombs = new int [bombcount][2];
-
             //Обработаем массив с бомбами
             String bombChar;
             if (visibInd == -1) {
@@ -200,8 +199,6 @@ public class GameStart {
                 visibleCount = Integer.valueOf(s.substring(visibCountInd  + PREF_VISIBLE_COUNT.length(), visibInd));
                 visibChar    = s.substring(visibInd + PREF_VISIBLE.length());
                 visibleCells = stringToCoordArray(visibChar, visibleCount);
-            } else {
-                visibleCount = 0;
             }
 
             field = new Field(wigth, height, bombCountInd, bombs, visibleCells);
@@ -233,41 +230,11 @@ public class GameStart {
         return field;
     }
 
-    private static int[][] listToArray(char[] charArray, int intArrayIndex){
-        int[][] intArray = new int[intArrayIndex][2];
-
-        int arrIndex = 0;
-        int x = -1;
-        int y = -1;
-        String tempString = "";
-        for (char symbol: charArray){
-            switch (symbol){
-                case ':':
-                    x = Integer.valueOf(tempString);
-                    tempString = "";
-                    break;
-                case ';':
-                    y = Integer.valueOf(tempString);
-                    intArray[arrIndex][0] = x;
-                    intArray[arrIndex][1] = y;
-                    tempString = "";
-                    arrIndex++;
-                    break;
-                default:
-                    tempString += symbol;
-                    break;
-            }
-        }
-
-
-        return intArray;
-    }
-
     private static int[][] stringToCoordArray (String coord, int intArrayIndex) throws IOException {
-        int[][] result = null;
+        int[][] result;
         String[] strArray = coord.split(COORD_SPLITER);
 
-        if (strArray.length == 0) {
+        if (strArray.length == 0 || strArray.length > intArrayIndex) {
             throw new IOException(DEFAULT_READ_FILE_ERROR);
         }
         result = new int[strArray.length][2];
