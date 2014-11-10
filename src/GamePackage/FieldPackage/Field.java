@@ -12,7 +12,7 @@ public class Field {
     private final static int DEFAULT_BOMB_COUNT = 10;
     private final static Random RAND = new Random();
 
-    private int bombCount;
+//    private int bombCount;
     private int wight;
     private int height;
     private Cell[][] field;
@@ -24,19 +24,17 @@ public class Field {
     }
 
     public Field(int wightSize, int heightSize, int bombC) {
-        bombCount = bombC;
         wight = wightSize;
         height = heightSize;
         field = new Cell[wight][height];
-        bombArray = new int[bombCount][2];
+        bombArray = new int[bombC][2];
         generateEmptyField();
         if (setBombs()) {
             generateField();
         }
     }
 
-    public Field(int wightSize, int heightSize, int bombC, int[][] bombsArr, int[][] cellsArr) {
-        bombCount = bombC;
+    public Field(int wightSize, int heightSize, int[][] bombsArr, int[][] cellsArr) {
         wight = wightSize;
         height = heightSize;
         field = new Cell[wight][height];
@@ -80,7 +78,7 @@ public class Field {
     }
 
     public int getBombCount() {
-        return bombCount;
+        return bombArray.length;
     }
 
     public void show() {
@@ -146,13 +144,13 @@ public class Field {
     }
     private boolean setBombs() {
 //        System.out.println("Устанавливаем бомбы...");
-        if (bombCount > wight * height) {
-            System.out.println("Невозможно разместить столько бомб на таком маленьком поле!!!");
-            System.out.println("Бомбы не были установлены!");
-            return false;
-        } else {
+//        if (bombCount > wight * height) {
+//            System.out.println("Невозможно разместить столько бомб на таком маленьком поле!!!");
+//            System.out.println("Бомбы не были установлены!");
+//            return false;
+//        } else {
             int bombsPlanted = 0;
-            while (bombsPlanted < bombCount) {
+            while (bombsPlanted < bombArray.length) {
                 int row = RAND.nextInt(height);
                 int column = RAND.nextInt(wight);
                 if (!(field[row][column].getCellType() == CellType.Bomb)) {
@@ -163,7 +161,7 @@ public class Field {
             }
 //            System.out.println("Бомбы установлены!");
             return true;
-        }
+//        }
     }
 
     private void setBomb(int row, int column) {
@@ -313,7 +311,7 @@ public class Field {
                 if (!cell.isVisible()) countInvisible++;
             }
         }
-        return  countInvisible == bombCount;
+        return  countInvisible == bombArray.length;
     }
 
     public void openField(){
