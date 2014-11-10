@@ -10,17 +10,22 @@ import java.io.*;
 public class GameStart {
     private static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Menu menuElement;
         boolean gameOver = false;
         System.out.println("Игра началась!");
         System.out.println();
         while (!gameOver) {
-            menuElement = Menu.selectFromMenu(BR);
-            if (menuElement == Menu.Exit) {
-                break;
-            }
-            Field gameField = makeNewField(menuElement);
+            Field gameField = null;
+            do {
+                menuElement = Menu.selectFromMenu(BR);
+                if (menuElement == Menu.Exit) {
+                    break;
+                }
+                gameField = makeNewField(menuElement);
+                System.out.println();
+            } while (gameField == null);
+
             boolean flag = true;
             int step = 0;
             while (flag) {
@@ -77,7 +82,7 @@ public class GameStart {
     }
 
     private static Field makeNewField(Menu menuElement) {
-        Field field = null;
+        Field field;
         switch (menuElement) {
             case SmallField:
                 field = new Field(10, 10, 10);

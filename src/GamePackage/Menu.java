@@ -1,8 +1,6 @@
 package GamePackage;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Created by PEfremov on 07.11.2014.

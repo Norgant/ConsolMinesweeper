@@ -6,6 +6,7 @@ import java.util.Random;
 
 /**
  * Created by PEfremov on 21.10.2014.
+ * Игровое поле
  */
 public class Field {
     private final static int DEFAULT_FIELD_SIZE = 10;
@@ -279,19 +280,19 @@ public class Field {
         return index;
     }
 
-    public boolean openRandomCell() {
-
-        int rowIndex = RAND.nextInt(height);
-        int colIndex = RAND.nextInt(wight);
-
-        while (field[rowIndex][colIndex].isVisible()) {
-            rowIndex = RAND.nextInt(height);
-            colIndex = RAND.nextInt(wight);
-        }
-
-        System.out.println("Открой мне ячейку [" + rowIndex + "][" + colIndex + "]");
-        return openCell(rowIndex, colIndex, false);
-    }
+//    public boolean openRandomCell() {
+//
+//        int rowIndex = RAND.nextInt(height);
+//        int colIndex = RAND.nextInt(wight);
+//
+//        while (field[rowIndex][colIndex].isVisible()) {
+//            rowIndex = RAND.nextInt(height);
+//            colIndex = RAND.nextInt(wight);
+//        }
+//
+//        System.out.println("Открой мне ячейку [" + rowIndex + "][" + colIndex + "]");
+//        return openCell(rowIndex, colIndex, false);
+//    }
 
     private int countEmpty(){
         int count = 0;

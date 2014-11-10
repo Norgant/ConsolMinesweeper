@@ -12,26 +12,29 @@ import java.io.IOException;
  */
 public class SaveLoad {
     private static final String DEFAULT_SAVE_PATH = "C:\\FileTest\\MineSavedGame.txt";
-    private static final String PREF_WIGHT          = "wight=";
-    private static final String PREF_HEIGHT         = "height=";
-    private static final String PREF_BOMBS          = "bombs=";
-    private static final String PREF_VISIBLE_COUNT  = "visiblecount=";
-    private static final String PREF_VISIBLE        = "visible=";
-    private static final String PREF_BOMBS_COUNT    = "bombscount=";
-    private static final String DEFAULT_READ_FILE_ERROR   = "Ошибка загрузки файла!!!";
+    private static final String PREF_WIGHT          = "wight";
+    private static final String PREF_HEIGHT         = "height";
+    private static final String PREF_BOMBS          = "bombs";
+    private static final String PREF_VISIBLE_COUNT  = "vis_count";
+    private static final String PREF_VISIBLE        = "visible";
+    private static final String PREF_BOMBS_COUNT    = "bomb_count";
+    private static final String DEFAULT_READ_FILE_ERROR = "Ошибка загрузки файла!!!";
+    private static final String DEFAULT_LOAD_FILE_ERROR = "Ошибка сохранения в файл!!!";
+    private static final String FILE_STRUCTURE_ERROR = "Нарушена структура файла!!!";
+    private static final String FILE_VALUE_ERROR     = "Неверные значения в файле!!!";
     private static final String DEFAULT_READ_FILE_SUCCESS = "Файл успешно загружен. Продолжим игру...";
-    private static final String COORS_SPLITTER        = ";";
+    private static final String COORDS_SPLITTER = ";";
     private static final String WIGHT_HEIGHT_SPLITTER = ":";
-    private static final String GLOBAL_SPLITTER = " \\\\ ";
+    private static final String GLOBAL_SPLITTER = "!";
     private static final String RAVN = "=";
-    private static final int MIN_ELEMENT_COUNT  = 4;
-    private static final int MMAX_ELEMENT_COUNT = 6;
+    private static final int MIN_ELEMENT_COUNT = 4;
+    private static final int MAX_ELEMENT_COUNT = 6;
 
     public static Field loadFieldFromFile(){
-        Field field = new Field();
+        Field field = null;
         int wigth;
         int height;
-        int bombcount;
+        int bombCount;
         int visibleCount;
         int[][] bombs;
         int[][] visibleCells = null;
@@ -46,109 +49,78 @@ public class SaveLoad {
 
 //            Получем массив загружемых элементов и проверяем его размер
             String[] loadedElements = s.split(GLOBAL_SPLITTER);
-            if (loadedElements.length != MIN_ELEMENT_COUNT || loadedElements.length != MMAX_ELEMENT_COUNT){
-                throw new IOException();
+            if (loadedElements.length != MIN_ELEMENT_COUNT && loadedElements.length != MAX_ELEMENT_COUNT){
+                throw new IOException(FILE_STRUCTURE_ERROR);
             }
 
 //            Обработаем ширину
-            if (loadedElements[0].indexOf(PREF_WIGHT) == -1){
-                throw new IOException();
-            } else {
-                int ravnIndex = loadedElements[0].indexOf(RAVN);
-                if (ravnIndex == -1) {
-                    throw new IOException();
-                } else {
-                    wigth = Integer.valueOf(loadedElements[0].substring(ravnIndex).trim());
-                }
-            }
+            wigth = Integer.valueOf(getValueFromString(loadedElements, PREF_WIGHT));
 
+//            Обработаем высоту
+            height = Integer.valueOf(getValueFromString(loadedElements, PREF_HEIGHT));
 
-            //Получем индексы ключевых слов, если их нет выводим ошибку
-            int wightInd = s.indexOf(PREF_WIGHT);
-            if (wightInd == -1) {
-                throw new IOException();
-            }
+//            Обработаем количество бомб
+            bombCount = Integer.valueOf(getValueFromString(loadedElements, PREF_BOMBS_COUNT));
 
-            int heightInd = s.indexOf(PREF_HEIGHT);
-            if (heightInd == -1) throw new IOException();
+//            Обработаем массив с бомбами
+            String bombStr = getValueFromString(loadedElements, PREF_BOMBS);
+            bombs = stringToCoordArray(bombStr, bombCount);
 
-            int bombCountInd = s.indexOf(PREF_BOMBS_COUNT);
-            if (bombCountInd == -1) throw new IOException();
-
-            int bombInd = s.indexOf(PREF_BOMBS);
-            if (bombInd == -1) throw new IOException();
-
-            //Файл может быть без видимых ячеек, поэтому проcто получим индекс видимых, но проверять не будем.
-            int visibInd = s.indexOf(PREF_VISIBLE);
-            int visibCountInd = s.indexOf(PREF_VISIBLE_COUNT);
-
-            //Получим основные параметры: Ширина, Высота, Количетсво бомб
-            wigth       = Integer.valueOf(s.substring(wightInd      + PREF_WIGHT.length(),       heightInd));
-            height      = Integer.valueOf(s.substring(heightInd     + PREF_HEIGHT.length(),      bombCountInd));
-            bombcount   = Integer.valueOf(s.substring(bombCountInd  + PREF_BOMBS_COUNT.length(), bombInd));
-
-            //Обработаем массив с бомбами
-            String bombChar;
-            if (visibInd == -1) {
-                bombChar = s.substring(bombInd + PREF_BOMBS.length());
-            } else {
-                bombChar = s.substring(bombInd + PREF_BOMBS.length(), visibCountInd);
-            }
-            bombs = stringToCoordArray(bombChar, bombcount);
-
-
-            //Обработаем массив с шагами
-            String visibChar;
-            if (visibInd != -1) {
-                visibleCount = Integer.valueOf(s.substring(visibCountInd  + PREF_VISIBLE_COUNT.length(), visibInd));
-                visibChar    = s.substring(visibInd + PREF_VISIBLE.length());
-                visibleCells = stringToCoordArray(visibChar, visibleCount);
+//            Обработаем открытиые ячейки если они есть
+            if (loadedElements.length == MAX_ELEMENT_COUNT){
+                visibleCount = Integer.valueOf(getValueFromString(loadedElements, PREF_VISIBLE_COUNT));
+                String visibStr =getValueFromString(loadedElements, PREF_VISIBLE);
+                visibleCells = stringToCoordArray(visibStr, visibleCount);
             }
 
             field = new Field(wigth, height, bombs, visibleCells);
 
             System.out.println(DEFAULT_READ_FILE_SUCCESS);
 
-//            //Посмотрим что получилось бомбами
-//            for (int[] bo: bombs){
-//                System.out.println("Бомба " + bo[0] + ":" + bo[1]);
-//            }
-//            System.out.println();
-//
-//            //Проверим что с видимыми ячейками
-//            if (visibInd != -1) {
-//                for (int[] cell: visibleCells){
-//                    System.out.println("Ячейка " + cell[0] + ":" + cell[1]);
-//                }
-//            }
-//
-//
-//            //Проверка заполнения
-//            System.out.println("Width: "     + wigth);
-//            System.out.println("Height: "    + height);
-//            System.out.println("Bobmcount: " + bombcount);
-//            System.out.println("CellCount: " + visibleCount);
-
-
+        } catch (NumberFormatException e){
+            System.out.println(FILE_VALUE_ERROR);
         } catch (Exception e) {
             System.out.println(DEFAULT_READ_FILE_ERROR);
+            System.out.println(e.getMessage());
         }
         return field;
     }
 
+    private static String getValueFromString(String[] strArr, String pref) throws IOException{
+        String result = null;
+        boolean valueFinded = false;
+        for (String elementStr : strArr) {
+            if (elementStr.contains(pref)) {
+                int ravnIndex = elementStr.indexOf(RAVN);
+                if (ravnIndex == -1) {
+                    throw new IOException(FILE_STRUCTURE_ERROR);
+                } else {
+                    result = elementStr.substring(ravnIndex + RAVN.length()).trim();
+                    valueFinded = true;
+                    break;
+                }
+            }
+        }
+        if (valueFinded) {
+            return result;
+        } else {
+            throw new IOException(FILE_STRUCTURE_ERROR);
+        }
+    }
+
     private static int[][] stringToCoordArray (String coord, int intArrayIndex) throws IOException {
         int[][] result;
-        String[] strArray = coord.split(COORS_SPLITTER);
+        String[] strArray = coord.split(COORDS_SPLITTER);
 
         if (strArray.length == 0 || strArray.length != intArrayIndex) {
-            throw new IOException(DEFAULT_READ_FILE_ERROR);
+            throw new IOException(FILE_STRUCTURE_ERROR);
         }
         result = new int[intArrayIndex][2];
         int resultIndex = 0;
         for (String coordStr: strArray){
             String[] coordArr = coordStr.split(WIGHT_HEIGHT_SPLITTER);
             if (coordArr.length != 2) {
-                throw new IOException(DEFAULT_READ_FILE_ERROR);
+                throw new IOException(FILE_STRUCTURE_ERROR);
             }
             result[resultIndex][0] = Integer.valueOf(coordArr[0].trim());
             result[resultIndex][1] = Integer.valueOf(coordArr[1].trim());
@@ -162,20 +134,20 @@ public class SaveLoad {
         boolean result = true;
         try (FileOutputStream fileOut = new FileOutputStream(DEFAULT_SAVE_PATH)) {
 
-            fileOut.write((PREF_WIGHT  + RAVN +    field.getWight()     + GLOBAL_SPLITTER).getBytes());
-            fileOut.write((PREF_HEIGHT + RAVN +    field.getHeight()    + GLOBAL_SPLITTER).getBytes());
-            fileOut.write((PREF_BOMBS_COUNT + RAVN + field.getBombCount() + GLOBAL_SPLITTER).getBytes());
-            fileOut.write((PREF_BOMBS + RAVN + field.getBombList() + GLOBAL_SPLITTER).getBytes());
+            fileOut.write((PREF_WIGHT       + RAVN +    field.getWight()     + GLOBAL_SPLITTER).getBytes());
+            fileOut.write((PREF_HEIGHT      + RAVN +    field.getHeight()    + GLOBAL_SPLITTER).getBytes());
+            fileOut.write((PREF_BOMBS_COUNT + RAVN +    field.getBombCount() + GLOBAL_SPLITTER).getBytes());
+            fileOut.write((PREF_BOMBS       + RAVN +    field.getBombList()).getBytes());
 
             int visibleCount = field.countVisible();
             if (visibleCount != 0) {
+                fileOut.write(GLOBAL_SPLITTER.getBytes());
                 fileOut.write((PREF_VISIBLE_COUNT + RAVN + field.countVisible()   + GLOBAL_SPLITTER).getBytes());
-                fileOut.write((PREF_VISIBLE       + RAVN + field.getVisibleList() + GLOBAL_SPLITTER).getBytes());
+                fileOut.write((PREF_VISIBLE       + RAVN + field.getVisibleList()).getBytes());
             }
 
         } catch (IOException e) {
-            System.out.println("Ошибка сохранения в файл!");
-            e.printStackTrace();
+            System.out.println(DEFAULT_LOAD_FILE_ERROR);
             result = false;
         }
         if (result) {
