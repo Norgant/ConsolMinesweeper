@@ -63,10 +63,8 @@ public class Field {
                 if (field[i][j].isVisible()) {
                     visibleList += i + ":" + j + ";";
                 }
-
             }
         }
-
         return visibleList;
     }
 

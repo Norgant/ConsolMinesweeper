@@ -8,45 +8,52 @@ import java.io.*;
  * Да начнется игра!
  */
 public class GameStart {
-    private static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
+    private static final BufferedReader BR   = new BufferedReader(new InputStreamReader(System.in));
+    private static final String WIN_MESSAGE   = "Поздравляем!!! Вы выйграли игру!!!";
+    private static final String LOSE_MESSAGE  = "Вы проиграли!!! Попробуйте снова!!!";
+    private static final String START_MESSAGE = "Игра началась!";
+
 
     public static void main(String[] args) throws IOException {
         Menu menuElement;
         boolean gameOver = false;
-        System.out.println("Игра началась!");
+        System.out.println(START_MESSAGE);
         System.out.println();
         while (!gameOver) {
             Field gameField = null;
             do {
                 menuElement = Menu.selectFromMenu(BR);
                 if (menuElement == Menu.Exit) {
+                    gameOver = true;
                     break;
                 }
                 gameField = makeNewField(menuElement);
                 System.out.println();
             } while (gameField == null);
 
-            boolean flag = true;
-            int step = 0;
-            while (flag) {
-                gameField.show();
-                System.out.println("Шаг " + step);
-                int[] inputArr = inputIndex(gameField);
-                flag = gameField.openCell(inputArr[0], inputArr[1], true); //gameField.openRandomCell();
-                if (gameField.isComplete()) break;
-                step++;
-            }
+            if (!gameOver) {
+                boolean flag = true;
+                int step = 0;
+                while (flag) {
+                    gameField.show();
+                    System.out.println("Шаг " + step);
+                    int[] inputArr = inputIndex(gameField);
+                    flag = gameField.openCell(inputArr[0], inputArr[1], true); //gameField.openRandomCell();
+                    if (gameField.isComplete()) break;
+                    step++;
+                }
 
-            if (flag) {
-                gameField.openField();
-                System.out.println("Поздравляем!!! Вы выйграли игру!!!");
-            } else {
-                System.out.println("Вы проиграли!!! Попробуйте снова!!!");
+                if (flag) {
+                    gameField.openField();
+                    System.out.println(WIN_MESSAGE);
+                } else {
+                    System.out.println(LOSE_MESSAGE);
+                }
+                System.out.println("Шагов выполненно: " + step);
+                System.out.println("Спасибо за игру!!!");
+                System.out.println();
+                gameOver = isGameOver();
             }
-            System.out.println("Шагов выполненно: " + step);
-            System.out.println("Спасибо за игру!!!");
-            System.out.println();
-            gameOver = isGameOver();
         }
     }
 
