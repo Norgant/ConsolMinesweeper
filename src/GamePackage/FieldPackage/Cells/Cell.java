@@ -2,6 +2,7 @@ package GamePackage.FieldPackage.Cells;
 
 /**
  * Created by PEfremov on 21.10.2014.
+ * Класс ячейки игрового поля
  */
 public class Cell {
     private final static String DEFAULT_INVISIBLE_VALUE = " * ";
@@ -24,10 +25,8 @@ public class Cell {
         return cellType;
     }
 
-
     public String getValue(){
         if (visible) {
-            //System.out.print(cellType);
             return value;
         }
         else return DEFAULT_INVISIBLE_VALUE;
