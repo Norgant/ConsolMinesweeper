@@ -5,7 +5,7 @@ import java.io.*;
 
 /**
  * Created by PEfremov on 21.10.2014.
- * Да начнется игра!
+ * Да начнется игра!!!
  */
 public class GameStart {
     private static final BufferedReader BR   = new BufferedReader(new InputStreamReader(System.in));
