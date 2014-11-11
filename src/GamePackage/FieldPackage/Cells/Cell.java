@@ -25,10 +25,8 @@ public class Cell {
         return cellType;
     }
 
-
     public String getValue(){
         if (visible) {
-            //System.out.print(cellType);
             return value;
         }
         else return DEFAULT_INVISIBLE_VALUE;

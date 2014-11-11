@@ -21,8 +21,8 @@ public class SaveLoad {
     private static final String FILE_STRUCTURE_ERROR = "Нарушена структура файла!!!";
     private static final String FILE_VALUE_ERROR     = "Неверные значения в файле!!!";
     private static final String DEFAULT_READ_FILE_SUCCESS = "Файл успешно загружен. Продолжим игру...";
-    private static final String COORDS_SPLITTER = ";";
-    private static final String WIGHT_HEIGHT_SPLITTER = ":";
+    public static final String COORDS_SPLITTER = ";";
+    public static final String WIGHT_HEIGHT_SPLITTER = ":";
     private static final String GLOBAL_SPLITTER = "!";
     private static final String RAVN = "=";
     private static final int MIN_ELEMENT_COUNT = 3;

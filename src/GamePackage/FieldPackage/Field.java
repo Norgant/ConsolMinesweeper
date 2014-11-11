@@ -76,10 +76,6 @@ public class Field {
         return height;
     }
 
-    public int getBombCount() {
-        return bombArray.length;
-    }
-
     public void show() {
         showTopIndex();
         showLine("-");
@@ -170,18 +166,6 @@ public class Field {
     private void putInBombArray(int index, int x, int y){
         bombArray[index][0] = x;
         bombArray[index][1] = y;
-    }
-
-    public int countVisible(){
-        int count = 0;
-        for (Cell[] row: field){
-            for (Cell cell:row){
-                if (cell.isVisible()) {
-                    count++;
-                }
-            }
-        }
-        return count;
     }
 
     private void generateField() {
@@ -277,20 +261,6 @@ public class Field {
         }
         return index;
     }
-
-//    public boolean openRandomCell() {
-//
-//        int rowIndex = RAND.nextInt(height);
-//        int colIndex = RAND.nextInt(wight);
-//
-//        while (field[rowIndex][colIndex].isVisible()) {
-//            rowIndex = RAND.nextInt(height);
-//            colIndex = RAND.nextInt(wight);
-//        }
-//
-//        System.out.println("Открой мне ячейку [" + rowIndex + "][" + colIndex + "]");
-//        return openCell(rowIndex, colIndex, false);
-//    }
 
     private int countEmpty(){
         int count = 0;

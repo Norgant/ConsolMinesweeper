@@ -38,7 +38,7 @@ public class GameStart {
                     gameField.show();
                     System.out.println("Шаг " + step);
                     int[] inputArr = inputIndex(gameField);
-                    flag = gameField.openCell(inputArr[0], inputArr[1], true); //gameField.openRandomCell();
+                    flag = gameField.openCell(inputArr[0], inputArr[1], true);
                     if (gameField.isComplete()) break;
                     step++;
                 }
