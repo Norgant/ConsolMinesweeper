@@ -12,6 +12,13 @@ public class GameStart {
     private static final String WIN_MESSAGE   = "Поздравляем!!! Вы выйграли игру!!!";
     private static final String LOSE_MESSAGE  = "Вы проиграли!!! Попробуйте снова!!!";
     private static final String START_MESSAGE = "Игра началась!";
+    private static final String END_MESSAGE   = "Спасибо за игру!!!";
+    private static final String INPUT_ERROR_MESSAGE   = "Некорректный ввод. Повторите...";
+    private static final String SAVE_COMMAND    = "save";
+    private static final String EXIT_COMMAND    = "exit";
+    private static final String REPEAT_COMMAND  = "repeat";
+    private static final String MENU_COMMAND    = "menu";
+
 
 
     public static void main(String[] args) throws IOException {
@@ -32,28 +39,63 @@ public class GameStart {
             } while (gameField == null);
 
             if (!gameOver) {
-                boolean flag = true;
-                int step = 0;
-                while (flag) {
+                while (!gameField.isComplete()) {
                     gameField.show();
-                    System.out.println("Шаг " + step);
-                    int[] inputArr = inputIndex(gameField);
-                    flag = gameField.openCell(inputArr[0], inputArr[1], true);
-                    if (gameField.isComplete()) break;
-                    step++;
+                    String userCommand  = getUserCommand();
+                    executeUserCommand(userCommand, gameField);
                 }
 
-                if (flag) {
+                if (gameField.isWin()) {
                     gameField.openField();
                     System.out.println(WIN_MESSAGE);
                 } else {
                     System.out.println(LOSE_MESSAGE);
                 }
-                System.out.println("Шагов выполненно: " + step);
-                System.out.println("Спасибо за игру!!!");
+                System.out.println(END_MESSAGE);
                 System.out.println();
                 gameOver = isGameOver();
             }
+        }
+    }
+
+    private static String getUserCommand(){
+        String command = null;
+        while (command == null) {
+            try {
+                System.out.println("Чтобы открыть ячейку введите координаты: Х:Y; \n" +
+                                   "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
+                                   "Для возврата в меню введите:  " + MENU_COMMAND);
+
+                command = BR.readLine();
+                command = command.trim().toLowerCase();
+                if (!command.equals(SAVE_COMMAND) && !command.equals(MENU_COMMAND) &&
+                        !command.contains(":")) {
+                    command = null;
+                    throw new IOException();
+                }
+            } catch (IOException exc) {
+                System.out.println(INPUT_ERROR_MESSAGE);
+            }
+        }
+        return command;
+
+    }
+
+    private static void executeUserCommand(String command, Field field){
+        switch (command){
+            case SAVE_COMMAND:
+                SaveLoad.saveGame(field);
+                break;
+            case EXIT_COMMAND:
+                break;
+            default:
+                String[] coordArr = command.split(":");
+                try {
+                    field.openCell(Integer.valueOf(coordArr[0]), Integer.valueOf(coordArr[1]), true);
+                } catch (Exception e) {
+                    System.out.println(INPUT_ERROR_MESSAGE);
+                }
+                break;
         }
     }
 
@@ -62,27 +104,28 @@ public class GameStart {
         boolean isOver = false;
         boolean inputCorrect = false;
         while (!inputCorrect) {
-            System.out.print("Введите \"Повтор\" для новой игры или \"Выход\" для выхода из игры: ");
+            System.out.print("Введите \"" + REPEAT_COMMAND + "\" для новой игры или \"" + EXIT_COMMAND
+                                                                                        + "\" для выхода из игры: ");
             try {
                 String answer = BR.readLine();
                 switch (answer.trim().toLowerCase()) {
-                    case "повтор":
+                    case REPEAT_COMMAND:
                         System.out.println();
                         System.out.println("-------Начнем новую игру!!!-----------");
                         inputCorrect = true;
                         break;
-                    case "выход":
+                    case EXIT_COMMAND:
                         System.out.println();
                         System.out.println("Пока-пока!!!");
                         inputCorrect = true;
                         isOver = true;
                         break;
                     default:
-                        System.out.println("Некорректный ввод. Повторите...");
+                        System.out.println(INPUT_ERROR_MESSAGE);
                         break;
                 }
             } catch (IOException exc) {
-                System.out.println("Некорректный ввод. Повторите:");
+                System.out.println(INPUT_ERROR_MESSAGE);
             }
         }
         return isOver;
@@ -114,30 +157,6 @@ public class GameStart {
         }
 
         return field;
-    }
-
-    private static int[] inputIndex(Field field){ //TODO Refactor input CODE
-        int[] indexArr = new int[2];
-        try {
-            String c;
-            System.out.print("Введите координату Х (либо введите save чтобы сохранить игру): ");
-            c = BR.readLine();
-            if (c.trim().equalsIgnoreCase("save")){
-                SaveLoad.saveGame(field);
-                System.out.print("Введите координату Х: ");
-                c = BR.readLine();
-            }
-            indexArr[0] = Integer.valueOf(c);
-
-            System.out.print("Введите координату Y: ");
-            c = BR.readLine();
-            indexArr[1] = Integer.valueOf(c);
-        } catch (IOException exc) {
-            System.out.println("Некорректный ввод");
-        }
-
-
-        return indexArr;
     }
 }
 

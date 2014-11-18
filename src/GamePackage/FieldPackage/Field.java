@@ -16,6 +16,8 @@ public class Field {
 //    private int bombCount;
     private int wight;
     private int height;
+    private boolean win = true;
+    private boolean complite  = false;
     private Cell[][] field;
     private int bombArray[][];
 
@@ -118,7 +120,6 @@ public class Field {
             outString += "-";
         }
         outString += "|";
-        //outString += "Надо переписать вывод линии";
         System.out.println(outString);
 
     }
@@ -172,7 +173,6 @@ public class Field {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < wight; j++) {
                 generateCellValue(i, j);
-
             }
         }
     }
@@ -203,8 +203,11 @@ public class Field {
         }
     }
 
-    public boolean openCell(int rowIndex, int colIndex, boolean showError) {
-        boolean retrn = true;
+    public boolean isWin(){
+        return win;
+    }
+
+    public void openCell(int rowIndex, int colIndex, boolean showError) {
 
         System.out.println("Открываем ячейку [" + rowIndex + "][" + colIndex + "]");
         if (checkIndex(rowIndex, colIndex)) {
@@ -213,7 +216,7 @@ public class Field {
                     case Bomb:
                         openField();
                         System.out.println("Бомба в ячейке [" + rowIndex + "][" + colIndex + "] !!!");
-                        retrn = false;
+                        win = false;
                         break;
                     case Index:
                         field[rowIndex][colIndex].show();
@@ -222,11 +225,12 @@ public class Field {
                         showAround(rowIndex, colIndex);
                         break;
                 }
+                setComplete();
+
             }
         } else if (showError) {
             System.out.println("Неверная ячейка [" + rowIndex + "][" + colIndex + "] !!!");
         }
-        return retrn;
     }
 
     private boolean checkIndex(int rowIndex, int colIndex) {
@@ -274,13 +278,17 @@ public class Field {
     }
 
     public boolean isComplete(){
+        return  complite;
+    }
+
+    private void setComplete(){
         int countInvisible = 0;
         for (Cell[] rowCell: field){
             for (Cell cell: rowCell){
                 if (!cell.isVisible()) countInvisible++;
             }
         }
-        return  countInvisible == bombArray.length;
+        complite = countInvisible == bombArray.length || countInvisible == 0;
     }
 
     public void openField(){
