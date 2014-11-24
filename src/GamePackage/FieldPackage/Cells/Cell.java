@@ -5,9 +5,9 @@ package GamePackage.FieldPackage.Cells;
  * Класс ячейки игрового поля
  */
 public class Cell {
-    private final static String DEFAULT_INVISIBLE_VALUE = " * ";
-    private final static String DEFAULT_VALUE = "   ";
-    private final static String DEFAULT_BOMB_VALUE = " B ";
+    private final static String DEFAULT_INVISIBLE_VALUE = "*";
+    private final static String DEFAULT_VALUE = " ";
+    private final static String DEFAULT_BOMB_VALUE = "B";
 
     private String value;
     private boolean visible = false;

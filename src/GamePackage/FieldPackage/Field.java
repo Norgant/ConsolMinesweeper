@@ -1,6 +1,7 @@
 package GamePackage.FieldPackage;
 
 import GamePackage.FieldPackage.Cells.*;
+import GamePackage.SaveLoad;
 
 import java.util.Random;
 
@@ -9,27 +10,28 @@ import java.util.Random;
  * Игровое поле
  */
 public class Field {
-    private final static int DEFAULT_FIELD_SIZE = 10;
+    private final static int DEFAULT_FIELD_HEIGHT = 10;
+    private final static int DEFAULT_FIELD_WIGHT = 10;
     private final static int DEFAULT_BOMB_COUNT = 10;
     private final static Random RAND = new Random();
 
 //    private int bombCount;
     private int wight;
     private int height;
-    private boolean win = true;
+    private boolean win = false;
     private boolean complite  = false;
     private Cell[][] field;
     private int bombArray[][];
 
 
     public Field() {
-        this(DEFAULT_FIELD_SIZE, DEFAULT_FIELD_SIZE, DEFAULT_BOMB_COUNT);
+        this(DEFAULT_FIELD_HEIGHT, DEFAULT_FIELD_WIGHT, DEFAULT_BOMB_COUNT);
     }
 
-    public Field(int wightSize, int heightSize, int bombC) {
+    public Field(int heightSize, int wightSize, int bombC) {
         wight = wightSize;
         height = heightSize;
-        field = new Cell[wight][height];
+        field = new Cell[height][wight];
         bombArray = new int[bombC][2];
         generateEmptyField();
         if (setBombs()) {
@@ -37,10 +39,10 @@ public class Field {
         }
     }
 
-    public Field(int wightSize, int heightSize, int[][] bombsArr, int[][] cellsArr) {
+    public Field(int heightSize, int wightSize, int[][] bombsArr, int[][] cellsArr) {
         wight = wightSize;
         height = heightSize;
-        field = new Cell[wight][height];
+        field = new Cell[height][wight];
         generateEmptyField();
         setBombs(bombsArr);
         generateField();
@@ -52,7 +54,7 @@ public class Field {
     public String getBombList() {
         String bombsList = "";
         for (int[] coords: bombArray){
-            bombsList += coords[0] + ":" + coords[1] + ";";
+            bombsList += coords[0] + SaveLoad.WIGHT_HEIGHT_SPLITTER + coords[1] + SaveLoad.COORDS_SPLITTER;
         }
 
         return bombsList;
@@ -63,7 +65,7 @@ public class Field {
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 if (field[i][j].isVisible()) {
-                    visibleList += i + ":" + j + ";";
+                    visibleList += i +  SaveLoad.WIGHT_HEIGHT_SPLITTER + j + SaveLoad.COORDS_SPLITTER;
                 }
             }
         }
@@ -81,45 +83,57 @@ public class Field {
     public void show() {
         showTopIndex();
         showLine("-");
+
         for (int i = 0; i < height; i++) {
-            System.out.print(i);
-            for (int j = i; String.valueOf(j).length() < String.valueOf(wight).length(); j = j * 10 + 10) {
-                System.out.print(" ");
-            }
+            System.out.print(getPrefValue(i,true));
             System.out.print("|");
             showRow(i);
-            System.out.print("|");
+            System.out.print(getPrefValue("|", false));
             System.out.println();
         }
         showLine("X");
         System.out.println();
     }
 
-    private void showTopIndex(){
-        String outString = "*";
-        for (int i = 1; String.valueOf(i).length() < String.valueOf(wight).length(); i *= 10) {
-            outString += " ";
+    private <T> String getPrefValue(T value, boolean append){
+        return getPrefValue(value, append, " ");
+    }
+
+    private <T> String getPrefValue(T value, boolean append, String pref){
+        int wigthLenght = String.valueOf(wight).length() + 1;
+        StringBuilder prefIndex = new StringBuilder(value.toString());
+        while (prefIndex.length() < wigthLenght) {
+            if (append) {
+                prefIndex.append(pref);
+            } else {
+                prefIndex.insert(0, pref);
+            }
         }
+        return prefIndex.toString();
+    }
+
+    private void showTopIndex(){
+        String outString = "";
+        System.out.print(getPrefValue("*", true));
         outString += "|";
         for (int i = 0; i < wight; i++) {
-            outString += " " + i + " ";
+            outString += getPrefValue(i, false);
         }
-        outString += "Y";
+        outString += getPrefValue("Y", false);
         System.out.println(outString);
     }
 
 
 
     private void showLine(String val) {
-        String outString = val;
-        for (int i = 1; String.valueOf(i).length() < String.valueOf(wight).length(); i *= 10) {
-            outString += " ";
-        }
+        String outString = "";
+        System.out.print(getPrefValue(val, true));
+
         outString += "|";
-        for (int i = 0; i < (wight * 2 + wight); i++) {
-            outString += "-";
+        for (int i = 0; i < (wight); i++) {
+            outString += getPrefValue("-", false, "-");
         }
-        outString += "|";
+        outString += getPrefValue("|", false, "-");
         System.out.println(outString);
 
     }
@@ -127,7 +141,7 @@ public class Field {
     private void showRow(int rowIndex) {
         String fieldRow = "";
         for (Cell a : field[rowIndex]) {
-            fieldRow += a.getValue();
+            fieldRow += getPrefValue(a.getValue(), false);
         }
         System.out.print(fieldRow);
     }
@@ -139,12 +153,6 @@ public class Field {
         }
     }
     private boolean setBombs() {
-//        System.out.println("Устанавливаем бомбы...");
-//        if (bombCount > wight * height) {
-//            System.out.println("Невозможно разместить столько бомб на таком маленьком поле!!!");
-//            System.out.println("Бомбы не были установлены!");
-//            return false;
-//        } else {
             int bombsPlanted = 0;
             while (bombsPlanted < bombArray.length) {
                 int row = RAND.nextInt(height);
@@ -155,9 +163,7 @@ public class Field {
                     bombsPlanted++;
                 }
             }
-//            System.out.println("Бомбы установлены!");
             return true;
-//        }
     }
 
     private void setBomb(int row, int column) {
@@ -198,7 +204,7 @@ public class Field {
                 }
             }
             if (roundBombsCount > 0) {
-                field[rowIndex][colIndex].setValue(" " + String.valueOf(roundBombsCount) + " ");
+                field[rowIndex][colIndex].setValue(String.valueOf(roundBombsCount));
             }
         }
     }
@@ -225,7 +231,9 @@ public class Field {
                         showAround(rowIndex, colIndex);
                         break;
                 }
-                setComplete();
+                if (!complite){
+                    checkComplete();
+                }
 
             }
         } else if (showError) {
@@ -281,14 +289,20 @@ public class Field {
         return  complite;
     }
 
-    private void setComplete(){
+    private void checkComplete(){
         int countInvisible = 0;
         for (Cell[] rowCell: field){
             for (Cell cell: rowCell){
                 if (!cell.isVisible()) countInvisible++;
             }
         }
-        complite = countInvisible == bombArray.length || countInvisible == 0;
+        if (countInvisible == bombArray.length) {
+            complite = true;
+            win = true;
+        } else if (countInvisible == 0){
+            complite = true;
+            win = false;
+        }
     }
 
     public void openField(){
@@ -298,6 +312,7 @@ public class Field {
             }
         }
         show();
+        checkComplete();
     }
 
 }

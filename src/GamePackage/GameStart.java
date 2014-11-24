@@ -1,4 +1,5 @@
 package GamePackage;
+
 import GamePackage.FieldPackage.Field;
 
 import java.io.*;
@@ -8,17 +9,16 @@ import java.io.*;
  * Да начнется игра!!!
  */
 public class GameStart {
-    private static final BufferedReader BR   = new BufferedReader(new InputStreamReader(System.in));
-    private static final String WIN_MESSAGE   = "Поздравляем!!! Вы выйграли игру!!!";
-    private static final String LOSE_MESSAGE  = "Вы проиграли!!! Попробуйте снова!!!";
+    private static final BufferedReader BR = new BufferedReader(new InputStreamReader(System.in));
+    private static final String WIN_MESSAGE = "Поздравляем!!! Вы выйграли игру!!!";
+    private static final String LOSE_MESSAGE = "Вы проиграли!!! Попробуйте снова!!!";
     private static final String START_MESSAGE = "Игра началась!";
-    private static final String END_MESSAGE   = "Спасибо за игру!!!";
-    private static final String INPUT_ERROR_MESSAGE   = "Некорректный ввод. Повторите...";
-    private static final String SAVE_COMMAND    = "save";
-    private static final String EXIT_COMMAND    = "exit";
-    private static final String REPEAT_COMMAND  = "repeat";
-    private static final String MENU_COMMAND    = "menu";
-
+    private static final String END_MESSAGE = "Спасибо за игру!!!";
+    private static final String INPUT_ERROR_MESSAGE = "Некорректный ввод. Повторите...";
+    private static final String SAVE_COMMAND = "save";
+    private static final String EXIT_COMMAND = "exit";
+    private static final String REPEAT_COMMAND = "repeat";
+    private static final String SURRENDER_COMMAND = "die";
 
 
     public static void main(String[] args) throws IOException {
@@ -41,11 +41,11 @@ public class GameStart {
             if (!gameOver) {
                 while (!gameField.isComplete()) {
                     gameField.show();
-                    String userCommand  = getUserCommand();
+                    String userCommand = getUserCommand();
                     executeUserCommand(userCommand, gameField);
                 }
 
-                if (gameField.isWin()) {
+                if (gameField.isWin() && gameField.isComplete()) {
                     gameField.openField();
                     System.out.println(WIN_MESSAGE);
                 } else {
@@ -58,18 +58,19 @@ public class GameStart {
         }
     }
 
-    private static String getUserCommand(){
+    private static String getUserCommand() {
         String command = null;
         while (command == null) {
             try {
-                System.out.println("Чтобы открыть ячейку введите координаты: Х:Y; \n" +
-                                   "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
-                                   "Для возврата в меню введите:  " + MENU_COMMAND);
+                System.out.println("Чтобы открыть ячейку введите координаты: Х" +
+                                    SaveLoad.WIGHT_HEIGHT_SPLITTER +"Y \n" +
+                                    "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
+                                    "Для завершения введите:  " + SURRENDER_COMMAND);
 
                 command = BR.readLine();
                 command = command.trim().toLowerCase();
-                if (!command.equals(SAVE_COMMAND) && !command.equals(MENU_COMMAND) &&
-                        !command.contains(":")) {
+                if (!command.equals(SAVE_COMMAND) && !command.equals(SURRENDER_COMMAND) &&
+                        !command.contains(SaveLoad.WIGHT_HEIGHT_SPLITTER)) {
                     command = null;
                     throw new IOException();
                 }
@@ -81,15 +82,17 @@ public class GameStart {
 
     }
 
-    private static void executeUserCommand(String command, Field field){
-        switch (command){
+    private static void executeUserCommand(String command, Field field) {
+        switch (command) {
             case SAVE_COMMAND:
                 SaveLoad.saveGame(field);
                 break;
-            case EXIT_COMMAND:
+            case SURRENDER_COMMAND:
+                field.openField();
+
                 break;
             default:
-                String[] coordArr = command.split(":");
+                String[] coordArr = command.split(SaveLoad.WIGHT_HEIGHT_SPLITTER);
                 try {
                     field.openCell(Integer.valueOf(coordArr[0]), Integer.valueOf(coordArr[1]), true);
                 } catch (Exception e) {
@@ -99,13 +102,13 @@ public class GameStart {
         }
     }
 
-    private static boolean isGameOver(){
+    private static boolean isGameOver() {
 
         boolean isOver = false;
         boolean inputCorrect = false;
         while (!inputCorrect) {
             System.out.print("Введите \"" + REPEAT_COMMAND + "\" для новой игры или \"" + EXIT_COMMAND
-                                                                                        + "\" для выхода из игры: ");
+                    + "\" для выхода из игры: ");
             try {
                 String answer = BR.readLine();
                 switch (answer.trim().toLowerCase()) {
@@ -144,8 +147,7 @@ public class GameStart {
                 field = new Field(25, 40, 99);
                 break;
             case MyField:
-                field = new Field();
-                System.out.println("В разработке, пока играйте в 10х10 )))");
+                field = inputFieldParam();
                 break;
             case LoadFile:
                 field = SaveLoad.loadFieldFromFile();
@@ -157,6 +159,55 @@ public class GameStart {
         }
 
         return field;
+    }
+
+    private static Field inputFieldParam() {
+        int wight = 0;
+        while (wight <= 0) {
+            try {
+                System.out.print("Введите количесвто колонок (от 10 до 100): ");
+                String inputValue = BR.readLine();
+                wight = Integer.valueOf(inputValue);
+                if (wight < 10 || wight > 101) {
+                    wight = 0;
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                System.out.println(INPUT_ERROR_MESSAGE);
+            }
+        }
+        int height = 0;
+        while (height <= 0) {
+            try {
+                System.out.print("Введите количесвто строк (от 10 до 100): ");
+                String inputValue = BR.readLine();
+                height = Integer.valueOf(inputValue);
+                if (height < 10 || height > 101) {
+                    height = 0;
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                System.out.println(INPUT_ERROR_MESSAGE);
+            }
+        }
+
+        int bombs = 0;
+        int bombMaxCount = wight * height;
+        while (bombs <= 0) {
+            try {
+                System.out.print("Введите количесвто бомб (от 10 до " + bombMaxCount + "): ");
+                String inputValue = BR.readLine();
+                bombs = Integer.valueOf(inputValue);
+                if (bombs < 10 || bombs > bombMaxCount) {
+                    bombs = 0;
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                System.out.println(INPUT_ERROR_MESSAGE);
+            }
+        }
+
+        return new Field(height, wight, bombs);
     }
 }
 
