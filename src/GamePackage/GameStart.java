@@ -1,6 +1,7 @@
 package GamePackage;
 
 import GamePackage.FieldPackage.Field;
+import GamePackage.FieldPackage.FieldBorder;
 
 import java.io.*;
 
@@ -62,8 +63,8 @@ public class GameStart {
         String command = null;
         while (command == null) {
             try {
-                System.out.println("Чтобы открыть ячейку введите координаты: Х" +
-                                    SaveLoad.WIGHT_HEIGHT_SPLITTER +"Y \n" +
+                System.out.println("Чтобы открыть ячейку введите координаты: " + FieldBorder.VerticalAxisName +
+                                    SaveLoad.WIGHT_HEIGHT_SPLITTER + FieldBorder.HorizontalAxisName + "\n" +
                                     "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
                                     "Для завершения введите:  " + SURRENDER_COMMAND);
 
@@ -102,7 +103,7 @@ public class GameStart {
         }
     }
 
-    private static boolean isGameOver() {
+    private static boolean isGameOver() { //TODO Change to case select: 1 - repeat, 2 - exit;
 
         boolean isOver = false;
         boolean inputCorrect = false;

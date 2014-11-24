@@ -1,6 +1,6 @@
 package GamePackage;
 
-import GamePackage.FieldPackage.Field;
+import GamePackage.FieldPackage.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

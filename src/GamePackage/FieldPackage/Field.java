@@ -82,16 +82,16 @@ public class Field {
 
     public void show() {
         showTopIndex();
-        showLine("-");
+        showLine(FieldBorder.HorizontalBorder);
 
         for (int i = 0; i < height; i++) {
             System.out.print(getPrefValue(i,true));
-            System.out.print("|");
+            System.out.print(FieldBorder.VerticalBorder);
             showRow(i);
-            System.out.print(getPrefValue("|", false));
+            System.out.print(getPrefValue(FieldBorder.VerticalBorder, false));
             System.out.println();
         }
-        showLine("X");
+        showLine(FieldBorder.VerticalAxisName);
         System.out.println();
     }
 
@@ -99,7 +99,7 @@ public class Field {
         return getPrefValue(value, append, " ");
     }
 
-    private <T> String getPrefValue(T value, boolean append, String pref){
+    private <T> String getPrefValue(T value, boolean append, T pref){
         int wigthLenght = String.valueOf(wight).length() + 1;
         StringBuilder prefIndex = new StringBuilder(value.toString());
         while (prefIndex.length() < wigthLenght) {
@@ -114,26 +114,26 @@ public class Field {
 
     private void showTopIndex(){
         String outString = "";
-        System.out.print(getPrefValue("*", true));
-        outString += "|";
+        System.out.print(getPrefValue(FieldBorder.CornerSymbol, true));
+        outString += FieldBorder.VerticalBorder;
         for (int i = 0; i < wight; i++) {
             outString += getPrefValue(i, false);
         }
-        outString += getPrefValue("Y", false);
+        outString += getPrefValue(FieldBorder.HorizontalAxisName, false);
         System.out.println(outString);
     }
 
 
 
-    private void showLine(String val) {
+    private <T> void showLine(T val) {
         String outString = "";
         System.out.print(getPrefValue(val, true));
 
-        outString += "|";
+        outString += FieldBorder.VerticalBorder;
         for (int i = 0; i < (wight); i++) {
-            outString += getPrefValue("-", false, "-");
+            outString += getPrefValue(FieldBorder.HorizontalBorder, false, FieldBorder.HorizontalBorder);
         }
-        outString += getPrefValue("|", false, "-");
+        outString += getPrefValue(FieldBorder.VerticalBorder, false, FieldBorder.HorizontalBorder);
         System.out.println(outString);
 
     }
