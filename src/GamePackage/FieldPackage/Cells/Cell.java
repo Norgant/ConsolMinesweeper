@@ -5,13 +5,24 @@ package GamePackage.FieldPackage.Cells;
  * Класс ячейки игрового поля
  */
 public class Cell {
-    private final static String DEFAULT_INVISIBLE_VALUE = "*";
+    private final static String DEFAULT_INVISIBLE_VALUE = "*";//TODO Move all default symbols to enum CellType
     private final static String DEFAULT_VALUE = " ";
     private final static String DEFAULT_BOMB_VALUE = "B";
+    private final static String DEFAULT_FLAG_VALUE = "F";
+    private final static String FLAG_ERROR_MESSAGE = "На открытой ячейке нельзя установить флаг!";
 
     private String value;
     private boolean visible = false;
     private CellType cellType;
+    private boolean flag = false;
+
+    public void setFlag() {
+        if (visible) {
+            System.out.println(FLAG_ERROR_MESSAGE);
+        } else {
+            flag = !flag;
+        }
+    }
 
     public Cell(){
         setValue();
@@ -21,15 +32,24 @@ public class Cell {
         return visible;
     }
 
+    public boolean isFlag() {
+        return flag;
+    }
+
     public CellType getCellType(){
         return cellType;
     }
 
     public String getValue(){
-        if (visible) {
-            return value;
+        if (flag && !visible) {
+            return DEFAULT_FLAG_VALUE;
+        } else {
+            if (visible) {
+                return value;
+            }  else {
+                return DEFAULT_INVISIBLE_VALUE;
+            }
         }
-        else return DEFAULT_INVISIBLE_VALUE;
     }
 
     private void setValue(){

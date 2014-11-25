@@ -50,10 +50,10 @@ public class SaveLoad {
             }
 
 //            Обработаем ширину
-            wigth = Integer.valueOf(getValueFromString(loadedElements, PREF_WIGHT));
+            wigth = Integer.parseInt(getValueFromString(loadedElements, PREF_WIGHT));
 
 //            Обработаем высоту
-            height = Integer.valueOf(getValueFromString(loadedElements, PREF_HEIGHT));
+            height = Integer.parseInt(getValueFromString(loadedElements, PREF_HEIGHT));
 
 //            Обработаем массив с бомбами
             String bombStr = getValueFromString(loadedElements, PREF_BOMBS);
@@ -114,8 +114,8 @@ public class SaveLoad {
             if (coordArr.length != 2) {
                 throw new IOException(FILE_STRUCTURE_ERROR);
             }
-            result[resultIndex][0] = Integer.valueOf(coordArr[0].trim());
-            result[resultIndex][1] = Integer.valueOf(coordArr[1].trim());
+            result[resultIndex][0] = Integer.parseInt(coordArr[0].trim());
+            result[resultIndex][1] = Integer.parseInt(coordArr[1].trim());
             resultIndex++;
         }
 

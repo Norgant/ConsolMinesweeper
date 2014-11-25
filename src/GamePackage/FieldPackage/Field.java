@@ -217,7 +217,7 @@ public class Field {
 
         System.out.println("Открываем ячейку [" + rowIndex + "][" + colIndex + "]");
         if (checkIndex(rowIndex, colIndex)) {
-            if (!field[rowIndex][colIndex].isVisible()) {
+            if (!field[rowIndex][colIndex].isVisible() && !field[rowIndex][colIndex].isFlag()) {
                 switch (field[rowIndex][colIndex].getCellType()) {
                     case Bomb:
                         openField();
@@ -272,6 +272,9 @@ public class Field {
             }
         }
         return index;
+    }
+    public void setFlag(int row, int column){
+        field[row][column].setFlag();
     }
 
     private int countEmpty(){

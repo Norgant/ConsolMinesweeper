@@ -20,6 +20,7 @@ public class GameStart {
     private static final String EXIT_COMMAND = "exit";
     private static final String REPEAT_COMMAND = "repeat";
     private static final String SURRENDER_COMMAND = "die";
+    private static final String FLAG_COMMAND = "flag";
 
 
     public static void main(String[] args) throws IOException {
@@ -64,9 +65,12 @@ public class GameStart {
         while (command == null) {
             try {
                 System.out.println("Чтобы открыть ячейку введите координаты: " + FieldBorder.VerticalAxisName +
-                                    SaveLoad.WIGHT_HEIGHT_SPLITTER + FieldBorder.HorizontalAxisName + "\n" +
-                                    "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
-                                    "Для завершения введите:  " + SURRENDER_COMMAND);
+                                   SaveLoad.WIGHT_HEIGHT_SPLITTER + FieldBorder.HorizontalAxisName + "\n" +
+                                   "Чтобы установить флаг введите: " + FLAG_COMMAND + " " +
+                                   FieldBorder.VerticalAxisName + SaveLoad.WIGHT_HEIGHT_SPLITTER +
+                                   FieldBorder.HorizontalAxisName + "\n" +
+                                   "Чтобы сохранить игру введите: " + SAVE_COMMAND + "; \n" +
+                                   "Для завершения введите:  " + SURRENDER_COMMAND);
 
                 command = BR.readLine();
                 command = command.trim().toLowerCase();
@@ -93,11 +97,22 @@ public class GameStart {
 
                 break;
             default:
-                String[] coordArr = command.split(SaveLoad.WIGHT_HEIGHT_SPLITTER);
-                try {
-                    field.openCell(Integer.valueOf(coordArr[0]), Integer.valueOf(coordArr[1]), true);
-                } catch (Exception e) {
-                    System.out.println(INPUT_ERROR_MESSAGE);
+                if (command.contains(FLAG_COMMAND)) {
+                    command = command.substring(command.indexOf(FLAG_COMMAND) + FLAG_COMMAND.length());
+                    String[] coordArr = command.split(SaveLoad.WIGHT_HEIGHT_SPLITTER);
+                    try {
+                        field.setFlag(Integer.parseInt(coordArr[0].trim()), Integer.parseInt(coordArr[1].trim()));
+                    } catch (Exception e) {
+                        System.out.println(INPUT_ERROR_MESSAGE);
+                    }
+                } else {
+                    String[] coordArr = command.split(SaveLoad.WIGHT_HEIGHT_SPLITTER);
+
+                    try {
+                        field.openCell(Integer.parseInt(coordArr[0].trim()), Integer.parseInt(coordArr[1].trim()), true);
+                    } catch (Exception e) {
+                        System.out.println(INPUT_ERROR_MESSAGE);
+                    }
                 }
                 break;
         }
@@ -168,7 +183,7 @@ public class GameStart {
             try {
                 System.out.print("Введите количесвто колонок (от 10 до 100): ");
                 String inputValue = BR.readLine();
-                wight = Integer.valueOf(inputValue);
+                wight = Integer.parseInt(inputValue);
                 if (wight < 10 || wight > 101) {
                     wight = 0;
                     throw new Exception();
@@ -182,7 +197,7 @@ public class GameStart {
             try {
                 System.out.print("Введите количесвто строк (от 10 до 100): ");
                 String inputValue = BR.readLine();
-                height = Integer.valueOf(inputValue);
+                height = Integer.parseInt(inputValue);
                 if (height < 10 || height > 101) {
                     height = 0;
                     throw new Exception();
@@ -198,7 +213,7 @@ public class GameStart {
             try {
                 System.out.print("Введите количесвто бомб (от 10 до " + bombMaxCount + "): ");
                 String inputValue = BR.readLine();
-                bombs = Integer.valueOf(inputValue);
+                bombs = Integer.parseInt(inputValue);
                 if (bombs < 10 || bombs > bombMaxCount) {
                     bombs = 0;
                     throw new Exception();

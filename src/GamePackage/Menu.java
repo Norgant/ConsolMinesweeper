@@ -39,7 +39,7 @@ public enum Menu {
         while (selectedElement == null) {
             showMenu();
             try {
-                selectedElement = Menu.values()[Integer.valueOf(BR.readLine()) - INDEX_INCREASE];
+                selectedElement = Menu.values()[Integer.parseInt(BR.readLine()) - INDEX_INCREASE];
             } catch (Exception e) {
                 System.out.println(INPUT_ERROR);
             }
