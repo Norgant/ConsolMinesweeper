@@ -16,6 +16,7 @@ public class SaveLoad {
     private static final String PREF_HEIGHT         = "height";
     private static final String PREF_BOMBS          = "bombs";
     private static final String PREF_VISIBLE        = "visible";
+    private static final String PREF_FLAG           = "flag";
     private static final String DEFAULT_READ_FILE_ERROR = "Ошибка загрузки файла!!!";
     private static final String DEFAULT_LOAD_FILE_ERROR = "Ошибка сохранения в файл!!!";
     private static final String FILE_STRUCTURE_ERROR = "Нарушена структура файла!!!";
@@ -26,7 +27,7 @@ public class SaveLoad {
     private static final String GLOBAL_SPLITTER = "!";
     private static final String RAVN = "=";
     private static final int MIN_ELEMENT_COUNT = 3;
-    private static final int MAX_ELEMENT_COUNT = 4;
+    private static final int MAX_ELEMENT_COUNT = 5;
 
     public static Field loadFieldFromFile(){
         Field field = null;
@@ -63,6 +64,15 @@ public class SaveLoad {
             if (loadedElements.length == MAX_ELEMENT_COUNT){
                 String visibleStr =getValueFromString(loadedElements, PREF_VISIBLE);
                 visibleCells = stringToCoordArray(visibleStr);
+            }
+
+
+//            Обработаем флаги если они есть
+            if (loadedElements.length > MIN_ELEMENT_COUNT){
+                String visibleStr =getValueFromString(loadedElements, PREF_VISIBLE);
+                if (!visibleStr.equals("")) {
+                    visibleCells = stringToCoordArray(visibleStr);
+                }
             }
 
             field = new Field(wigth, height, bombs, visibleCells);
@@ -130,11 +140,19 @@ public class SaveLoad {
             fileOut.write((PREF_HEIGHT + RAVN + field.getHeight() + GLOBAL_SPLITTER).getBytes());
             fileOut.write((PREF_BOMBS  + RAVN + field.getBombList()).getBytes());
 
-          String visibleList = field.getVisibleList();
+            String visibleList = field.getVisibleList();
             if (!visibleList.equals("")) {
                 fileOut.write(GLOBAL_SPLITTER.getBytes());
                 fileOut.write((PREF_VISIBLE + RAVN + visibleList).getBytes());
             }
+
+
+            String flagList = field.getFlagList();
+            if (!flagList.equals("")) {
+                fileOut.write(GLOBAL_SPLITTER.getBytes());
+                fileOut.write((PREF_VISIBLE + RAVN + visibleList).getBytes());
+            }
+
 
         } catch (IOException e) {
             System.out.println(DEFAULT_LOAD_FILE_ERROR);

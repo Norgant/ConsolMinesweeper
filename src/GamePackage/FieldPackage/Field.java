@@ -72,6 +72,18 @@ public class Field {
         return visibleList;
     }
 
+    public String getFlagList() {
+        String flagList = "";
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[0].length; j++) {
+                if (field[i][j].isFlag()) {
+                    flagList += i +  SaveLoad.WIGHT_HEIGHT_SPLITTER + j + SaveLoad.COORDS_SPLITTER;
+                }
+            }
+        }
+        return flagList;
+    }
+
     public int getWight() {
         return wight;
     }
