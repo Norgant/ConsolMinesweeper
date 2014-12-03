@@ -150,7 +150,7 @@ public class SaveLoad {
             String flagList = field.getFlagList();
             if (!flagList.equals("")) {
                 fileOut.write(GLOBAL_SPLITTER.getBytes());
-                fileOut.write((PREF_VISIBLE + RAVN + visibleList).getBytes());
+                fileOut.write((PREF_FLAG + RAVN + visibleList).getBytes());
             }
 
 
