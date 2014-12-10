@@ -1,10 +1,12 @@
 package GamePackage.FieldPackage.Cells;
 
+import java.io.Serializable;
+
 /**
  * Created by PEfremov on 21.10.2014.
  * Класс ячейки игрового поля
  */
-public class Cell {
+public class Cell implements Serializable {
     private final static String DEFAULT_INVISIBLE_VALUE = "*";//TODO Move all default symbols to enum CellType
     private final static String DEFAULT_VALUE = " ";
     private final static String DEFAULT_BOMB_VALUE = "B";

@@ -2,9 +2,7 @@ package GamePackage;
 
 import GamePackage.FieldPackage.*;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by PEfremov on 05.11.2014.
@@ -29,12 +27,14 @@ public class SaveLoad {
     private static final int MIN_ELEMENT_COUNT = 3;
     private static final int MAX_ELEMENT_COUNT = 5;
 
+
     public static Field loadFieldFromFile(){
         Field field = null;
         int wigth;
         int height;
         int[][] bombs;
         int[][] visibleCells = null;
+        int[][] flags = null;
 
         try (FileInputStream inpFile = new FileInputStream(DEFAULT_SAVE_PATH)) {
             int flag = inpFile.read();
@@ -46,7 +46,7 @@ public class SaveLoad {
 
 //            Получем массив загружемых элементов и проверяем его размер
             String[] loadedElements = s.split(GLOBAL_SPLITTER);
-            if (loadedElements.length != MIN_ELEMENT_COUNT && loadedElements.length != MAX_ELEMENT_COUNT){
+            if (loadedElements.length < MIN_ELEMENT_COUNT || loadedElements.length > MAX_ELEMENT_COUNT){
                 throw new IOException(FILE_STRUCTURE_ERROR);
             }
 
@@ -61,22 +61,27 @@ public class SaveLoad {
             bombs = stringToCoordArray(bombStr);
 
 //            Обработаем открытиые ячейки если они есть
-            if (loadedElements.length == MAX_ELEMENT_COUNT){
-                String visibleStr =getValueFromString(loadedElements, PREF_VISIBLE);
+            String visibleStr = getValueFromString(loadedElements, PREF_VISIBLE, false);
+            if (visibleStr != null) {
                 visibleCells = stringToCoordArray(visibleStr);
             }
 
 
 //            Обработаем флаги если они есть
-            if (loadedElements.length > MIN_ELEMENT_COUNT){
-                String visibleStr =getValueFromString(loadedElements, PREF_VISIBLE);
-                if (!visibleStr.equals("")) {
-                    visibleCells = stringToCoordArray(visibleStr);
-                }
+            String flagStr = getValueFromString(loadedElements, PREF_FLAG, false);
+            if (flagStr != null) {
+                flags = stringToCoordArray(flagStr);
             }
 
-            field = new Field(wigth, height, bombs, visibleCells);
+            if (visibleCells != null) {
+                field = new Field(height, wigth, bombs, visibleCells);
+            } else {
+                field = new Field(height, wigth, bombs);
+            }
 
+            if (flags != null) {
+                field.setFlag(flags);
+            }
             System.out.println(DEFAULT_READ_FILE_SUCCESS);
 
         } catch (NumberFormatException e){
@@ -89,6 +94,10 @@ public class SaveLoad {
     }
 
     private static String getValueFromString(String[] strArr, String pref) throws IOException{
+        return getValueFromString(strArr, pref, true);
+    }
+
+    private static String getValueFromString(String[] strArr, String pref, boolean trowException) throws IOException{
         String result = null;
         boolean valueFinded = false;
         for (String elementStr : strArr) {
@@ -106,7 +115,12 @@ public class SaveLoad {
         if (valueFinded) {
             return result;
         } else {
-            throw new IOException(FILE_STRUCTURE_ERROR);
+            if (trowException) {
+                throw new IOException(FILE_STRUCTURE_ERROR);
+            }
+            else {
+                return result;
+            }
         }
     }
 
@@ -150,12 +164,12 @@ public class SaveLoad {
             String flagList = field.getFlagList();
             if (!flagList.equals("")) {
                 fileOut.write(GLOBAL_SPLITTER.getBytes());
-                fileOut.write((PREF_FLAG + RAVN + visibleList).getBytes());
+                fileOut.write((PREF_FLAG + RAVN + flagList).getBytes());
             }
-
 
         } catch (IOException e) {
             System.out.println(DEFAULT_LOAD_FILE_ERROR);
+            System.out.println(e.getMessage());
             result = false;
         }
         if (result) {

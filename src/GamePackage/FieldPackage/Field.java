@@ -3,13 +3,14 @@ package GamePackage.FieldPackage;
 import GamePackage.FieldPackage.Cells.*;
 import GamePackage.SaveLoad;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * Created by PEfremov on 21.10.2014.
  * Игровое поле
  */
-public class Field {
+public class Field implements Serializable{
     private final static int DEFAULT_FIELD_HEIGHT = 10;
     private final static int DEFAULT_FIELD_WIGHT = 10;
     private final static int DEFAULT_BOMB_COUNT = 10;
@@ -40,12 +41,20 @@ public class Field {
     }
 
     public Field(int heightSize, int wightSize, int[][] bombsArr, int[][] cellsArr) {
+        this(heightSize, wightSize, bombsArr);
+        showCellsArray(cellsArr);
+    }
+
+    public Field(int heightSize, int wightSize, int[][] bombsArr) {
         wight = wightSize;
         height = heightSize;
         field = new Cell[height][wight];
         generateEmptyField();
         setBombs(bombsArr);
         generateField();
+    }
+
+    private void showCellsArray(int[][] cellsArr){
         for (int[] cell: cellsArr){
             field[cell[0]][cell[1]].show();
         }
@@ -287,6 +296,11 @@ public class Field {
     }
     public void setFlag(int row, int column){
         field[row][column].setFlag();
+    }
+
+    public void setFlag(int[][] flags){
+        for (int[] flag: flags)
+        field[flag[0]][flag[1]].setFlag();
     }
 
     private int countEmpty(){
