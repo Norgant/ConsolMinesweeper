@@ -7,6 +7,7 @@ import java.io.*;
 /**
  * Created by PEfremov on 05.11.2014.
  * В ходе рефакторинга сохранение и загрузка вынесены в отдельный класс
+ * Можно загружать флаги!
  */
 public class SaveLoad {
     private static final String DEFAULT_SAVE_PATH = "C:\\FileTest\\MineSavedGame.txt";
