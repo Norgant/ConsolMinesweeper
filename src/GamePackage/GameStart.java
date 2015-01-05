@@ -223,6 +223,9 @@ public class GameStart {
             }
         }
 
+
+
+
         return new Field(height, wight, bombs);
     }
 }
